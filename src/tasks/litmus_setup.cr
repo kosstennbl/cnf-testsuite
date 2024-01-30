@@ -87,9 +87,10 @@ module LitmusManager
   ## wait_for_test will wait for the completion of litmus test
   def self.wait_for_test(test_name, chaos_experiment_name,total_chaos_duration,args, namespace : String = "default")
     ## Maximum wait time is TCD (total chaos duration) + 60s (additional wait time)
-    delay=2
-    timeout="#{total_chaos_duration}".to_i + 60
-    retry=timeout/delay
+    delay = 1
+    ## TODO: timeout and retry are unused here, it would be nice to unify all waiters and remove unused variables.
+    timeout = "#{total_chaos_duration}".to_i + 60
+    retry = timeout/delay
     chaos_result_name = "#{test_name}-#{chaos_experiment_name}"
     wait_count = 0
     status_code = -1
@@ -99,7 +100,7 @@ module LitmusManager
     Log.for("wait_for_test").info { "Checking experiment status #{experimentStatus_cmd}" } if check_verbose(args)
 
     ## Wait for completion of chaosengine which indicates the completion of chaos
-    until (status_code == 0 && experimentStatus == "Completed") || wait_count >= 1800
+    until (status_code == 0 && experimentStatus == "Completed") || wait_count >= DV_LITMUS_EXPERIMENT_TIMEOUT
       sleep delay
       experimentStatus_cmd = "kubectl get chaosengine.litmuschaos.io #{test_name}  -n #{namespace} -o jsonpath='{.status.experiments[0].status}'"
       Log.for("wait_for_test").info { "Checking experiment status  #{experimentStatus_cmd}" } if check_verbose(args)
@@ -122,7 +123,7 @@ module LitmusManager
     verdict_cmd = "kubectl get chaosresults.litmuschaos.io #{chaos_result_name}  -n #{namespace} -o jsonpath='{.status.experimentStatus.verdict}'"
     Log.for("wait_for_test").info { "Checking experiment verdict  #{verdict_cmd}" } if check_verbose(args)
     ## Check the chaosresult verdict
-    until (status_code == 0 && verdict != "Awaited") || wait_count >= 30
+    until (status_code == 0 && verdict != "Awaited") || wait_count >= DV_LITMUS_VERDICT_TIMEOUT
       sleep delay
       status_code = Process.run("#{verdict_cmd}", shell: true, output: verdict_response = IO::Memory.new, error: stderr = IO::Memory.new).exit_status
       Log.for("wait_for_test").info { "status_code: #{status_code}" } if check_verbose(args)

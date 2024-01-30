@@ -500,7 +500,7 @@ task "pod_delete", ["install_litmus"] do |_, args|
         KubectlClient::Annotate.run("--overwrite -n #{app_namespace} deploy/#{resource["name"]} litmuschaos.io/chaos=\"true\"")
 
         chaos_experiment_name = "pod-delete"
-        total_chaos_duration = "30"
+        total_chaos_duration = DV_TOTAL_CHAOS_DURATION_POD_DELETE
         target_pod_name = ""
         test_name = "#{resource["name"]}-#{Random.rand(99)}" 
         chaos_result_name = "#{test_name}-#{chaos_experiment_name}"
@@ -742,7 +742,7 @@ task "pod_dns_error", ["install_litmus"] do |_, args|
           KubectlClient::Annotate.run("--overwrite -n #{app_namespace} deploy/#{resource["name"]} litmuschaos.io/chaos=\"true\"")
 
           chaos_experiment_name = "pod-dns-error"
-          total_chaos_duration = "120"
+          total_chaos_duration = DV_TOTAL_CHAOS_DURATION_POD_DNS_ERROR
           target_pod_name = ""
           test_name = "#{resource["name"]}-#{Random.rand(99)}" 
           chaos_result_name = "#{test_name}-#{chaos_experiment_name}"

@@ -54,7 +54,7 @@ module ChaosMeshSetup
 
   def self.wait_for_test(test_type, test_name)
     second_count = 0
-    wait_count = 60
+    wait_count = DV_CHAOS_MESH_TEST_TIMEOUT
     status = ""
     until (status.empty? != true && status == "Finished") || second_count > wait_count.to_i
       Log.debug { "second_count = #{second_count}" }
@@ -87,11 +87,11 @@ module ChaosMeshSetup
   # TODO make generate without delete?
   def self.wait_for_resource(resource_file)
     second_count = 0
-    wait_count = 60
+    wait_count = DV_CHAOS_MESH_RESOURCE_TIMEOUT
     is_resource_created = nil
     until (is_resource_created.nil? != true && is_resource_created == true) || second_count > wait_count.to_i
       Log.info { "second_count = #{second_count}" }
-      sleep 3
+      sleep 1
       cmd = "kubectl create -f #{resource_file} 2>&1 >/dev/null"
       status = Process.run(
         cmd,
