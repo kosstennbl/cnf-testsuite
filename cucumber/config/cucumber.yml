@@ -1,0 +1,6 @@
+# Cucumber has possibility to use different profiles to run
+# Tests in different configurations.
+# Also, this configuration files supports some functional elements:
+<% common = "--publish-quiet --tags 'not @wip and not @manual' --format TestCatalogFormatter::Formatter" %>
+default: <%= common %>
+certification: <%= common %> --tags "@certification"

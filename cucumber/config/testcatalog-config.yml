@@ -1,0 +1,2 @@
+# This configuration file is proposed to be used for configuring testcatalog-specific parameters
+helm_chart_path: "cnf/sample_cnfs/sample_coredns/chart"
