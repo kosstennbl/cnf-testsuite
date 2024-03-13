@@ -10,7 +10,7 @@ Given("the following test on CNF is setup:") do |table|
 end
 
 When("the cnti-testsuite is executed") do
-    args = ["--require", "features", "../cnti-tests/features/" ,"--name", "#{@tested_scenario}"]
+    args = ["--require", "features", "../cnti-tests/features/" ,"--name", "#{@tested_scenario}", "--publish-quiet"]
     @exit_status = 0
     begin
         # Run Cucumber with the specified arguments
@@ -19,7 +19,8 @@ When("the cnti-testsuite is executed") do
         @exit_status = e.status
     end
 end
- 
+
+# Check if test passed
 Then("the test passes") do
     expect(@exit_status).to eq(0)
 end
