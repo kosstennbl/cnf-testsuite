@@ -3,7 +3,10 @@ module Helm
     helm_binary = Settings.helm_binary
     namespace_param = namespace.empty? "" : "--namespace #{namespace}"
     command = "#{helm_binary} #{command} #{params.join(" ")} #{namespace_param}"
-    result = system(command)
+    IO.popen(command) do |io|
+      result = io.read
+    end
+    result
 
   def add_repo(name, url)
     result = run_helm_command("repo add", [name, url])
@@ -13,7 +16,7 @@ module Helm
   end
  
   def install_chart(name, path, namespace = "")
-    result = run_helm_command("install", [name, path, "--create-namespace"], namespace: namespace)
+    result = run_helm_command("install", [name, path, "--create-namespace", "--wait"], namespace: namespace)
     raise "Failed to install #{name} chart. Please check your Kubernetes cluster and try again." unless result
   end
  
@@ -21,5 +24,4 @@ module Helm
     result = run_helm_command("uninstall" [name, path], namespace: namespace)
     raise "Failed to uninstall #{name} chart. Please check your Kubernetes cluster and try again." unless result
   end
- end
 end

@@ -1,6 +1,6 @@
 Given ("CNF is deployed in dry mode") do
   if !CNFManager.cnf_installed? do
-    Log.info("Installing CNF in dry-run from #{Config.cnf_location} file")
+    Log.info("Installing CNF in dry-run from #{Settings.cnf_location} file")
     CNFManager.cnf_install(params:['--dry-run'])
     Log.info("CNF installed")
   else do
@@ -9,7 +9,7 @@ Given ("CNF is deployed in dry mode") do
 end
 
 Then ("Helm files do not contain hardcoded ip addresses") do
-  cnf_installation_dir = config['cnf_installation_dir']
+  cnf_installation_dir = Settings.cnf_installation_dir
   chart_path = "#{cnf_installation_dir}/helm_chart.yml"
 
   File.foreach(chart_path).with_index do |line, line_number|

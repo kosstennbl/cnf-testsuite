@@ -1,0 +1,10 @@
+# For defining your own value of parameter - uncomment it and change the value.
+
+# Path to the folder, which contains cnf-testsuite.yml file for CNF installation and all other CNF files if they're needed.
+#helm_chart_path: "cnf/sample_cnfs/sample_coredns/chart"
+
+# Path to the folder, which will contain all files of the currently installed CNF
+#cnf_location: "cnf_install"
+
+# Path to the helm binary, that is intended to be used for all testsuite tasks.
+#helm_binary: "/bin/helm"
