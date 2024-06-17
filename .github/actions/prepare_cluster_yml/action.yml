@@ -1,0 +1,52 @@
+name: Prepare cluster.yml
+description: Prepare the kind cluster configuration file, configure mirrors.
+
+runs:
+  using: "composite"
+  steps:
+    - name: Mirror Setup
+      run: |
+        cat << EOF > /tmp/cluster.yml
+        kind: Cluster
+        apiVersion: kind.x-k8s.io/v1alpha4
+        nodes:
+        - role: control-plane
+          image: kindest/node:v1.29.2@sha256:51a1434a5397193442f0be2a297b488b6c919ce8a3931be0ce822606ea5ca245
+        containerdConfigPatches:
+        - |-
+          [plugins."io.containerd.grpc.v1.cri".registry.mirrors."docker.io"]
+            endpoint = ["http://139.178.70.81:80"]
+          [plugins."io.containerd.grpc.v1.cri".registry.mirrors."registry:5000"]
+            endpoint = ["http://localhost:5000"]
+          [plugins."io.containerd.grpc.v1.cri".registry.mirrors."registry.default.svc.cluster.local:5000"]
+            endpoint = ["http://localhost:5000"]
+        EOF
+    - name: sysctls specs kind config override
+      if: matrix.spec == 'sysctls'
+      run: |
+        cat << EOF > /tmp/cluster.yml
+        kind: Cluster
+        apiVersion: kind.x-k8s.io/v1alpha
+        # Enabled additional unsafe sysctls to support the negative spec test for sysctls
+        nodes:
+        - role: control-plane
+          image: kindest/node:v1.29.2@sha256:51a1434a5397193442f0be2a297b488b6c919ce8a3931be0ce822606ea5ca245
+          kubeadmConfigPatches:
+          - |
+            kind: KubeletConfiguration
+            allowedUnsafeSysctls: ["kernel.msg*"]
+        EOF
+    - name: Mirror Override
+      if: matrix.spec == 'private_registry_image'
+      run: |
+        cat << EOF > /tmp/cluster.yml
+        kind: Cluster
+        apiVersion: kind.x-k8s.io/v1alpha4
+        nodes:
+        - role: control-plane
+        containerdConfigPatches:
+          - |-
+            [plugins."io.containerd.grpc.v1.cri".registry.mirrors."registry:5000"]
+              endpoint = ["http://localhost:5000"]
+            [plugins."io.containerd.grpc.v1.cri".registry.mirrors."registry.default.svc.cluster.local:5000"]
+              endpoint = ["http://localhost:5000"]

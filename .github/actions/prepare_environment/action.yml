@@ -1,0 +1,27 @@
+name: Prepare test environment
+description: Prepare the kind cluster, install kubectl and helm
+
+runs:
+  using: "composite"
+  steps:
+    - name: Install Latest Kind
+      env:
+        KIND_VERSION: v0.22.0
+        KIND_URL: https://kind.sigs.k8s.io/dl
+      run: |
+        echo "Existing kind binary path: $(which kind)"
+        if [[ -s $(which kind) ]]; then sudo rm $(which kind); fi
+        wget -O kind "$KIND_URL/$KIND_VERSION/kind-linux-amd64" --progress=dot:giga; 
+        chmod +x ./kind
+        sudo mv ./kind /usr/local/bin/kind
+        kind --version
+    - name: Create Kind Cluster 
+      run: |
+        cat /tmp/cluster.yml
+        export CLUSTER=$(uuidgen)
+        echo "export CLUSTER=$CLUSTER" > cluster.env
+        echo kind create cluster --name $CLUSTER --config=/tmp/cluster.yml --kubeconfig ./$CLUSTER.conf
+        kind --version
+        kind create cluster --name $CLUSTER --config=/tmp/cluster.yml --kubeconfig ./$CLUSTER.conf
+        export KUBECONFIG=$(pwd)/$CLUSTER.conf
+        kubectl get nodes 
