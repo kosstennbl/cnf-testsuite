@@ -37,8 +37,8 @@ task "cnf_cleanup" do |_, args|
   else
     force = false
   end
-  config = CNFManager.parsed_config_file(CNFManager.ensure_cnf_testsuite_yml_path(cnf))
-  install_method = CNFInstall.cnf_installation_method(config)
+  config = CNFInstall::Config.parse_cnf_config_from_file(CNFManager.ensure_cnf_testsuite_yml_path(cnf))
+  install_method = config.dynamic.install_method
   if install_method[0] == CNFInstall::InstallMethod::ManifestDirectory
     installed_from_manifest = true
   else
@@ -54,24 +54,6 @@ task "CNFManager.helm_repo_add" do |_, args|
     CNFManager.helm_repo_add(args: args)
   else
     CNFManager.helm_repo_add
-  end
-
-end
-
-task "generate_config" do |_, args|
-  Log.for("verbose").info { "CNFManager.generate_config" } if check_verbose(args)
-  Log.for("verbose").debug { "args = #{args.inspect}" } if check_verbose(args)
-  if args.named["config-src"]? 
-    config_src = args.named["config-src"].as(String)
-    output_file = args.named["output-file"].as(String) if args.named["output-file"]?
-    output_file = args.named["of"].as(String) if args.named["of"]?
-    if output_file && !output_file.empty?
-      Log.info { "generating config with an output file" }
-      CNFManager::GenerateConfig.generate_config(config_src, output_file)
-    else
-      Log.info { "generating config without an output file" }
-      CNFManager::GenerateConfig.generate_config(config_src)
-    end
   end
 
 end

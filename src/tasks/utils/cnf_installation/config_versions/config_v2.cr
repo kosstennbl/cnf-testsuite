@@ -197,6 +197,22 @@ module CNFInstall
              rolling_downgrade_test_tag = "",
              rolling_version_change_test_tag = "",
              rollback_from_tag = ""
+      
+      def get_container_tag(tag_name)
+        # (kosstennbl) TODO: rework version change test and its configuration to get rid of this method.
+        case tag_name
+        when "rolling_update"
+          rolling_update_test_tag
+        when "rolling_downgrade"
+          rolling_downgrade_test_tag
+        when "rolling_version_change"
+          rolling_version_change_test_tag
+        when "rollback_from"
+          rollback_from_tag
+        else
+          raise ArgumentError.new("Incorrect tag name for container configuration: #{tag_name}")
+        end
+      end
     end
   end
 end
